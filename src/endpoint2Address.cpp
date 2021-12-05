@@ -8,8 +8,6 @@
 #include "pch.hpp"
 #include "endpoint2Address.hpp"
 
-#include <arpa/inet.h>
-
 namespace dci::module::ppn::transport::net
 {
     apit::Address endpoint2Address(const idl::net::Endpoint& ep)
