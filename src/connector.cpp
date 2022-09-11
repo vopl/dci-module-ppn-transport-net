@@ -51,10 +51,10 @@ namespace dci::module::ppn::transport::net
                "tcp6"sv  != scheme &&
                "tcp"sv   != scheme)
             {
-                return cmt::readyFuture<void>(exception::buildInstance<api::BadAddress>(address.value));
+                return cmt::readyFuture<None>(exception::buildInstance<api::BadAddress>(address.value));
             }
 
-            return cmt::spawnv() += _tol * [this, address](cmt::Promise<>& out)
+            return cmt::spawnv() += _tol * [this, address](cmt::Promise<None>& out)
             {
                 try
                 {
@@ -63,7 +63,7 @@ namespace dci::module::ppn::transport::net
                     _address = std::move(address);
                     methods()->addressChanged(_address);
 
-                    out.resolvedValue();
+                    out.resolveValue(None{});
                 }
                 catch(const cmt::task::Stop&)
                 {

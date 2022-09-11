@@ -48,7 +48,7 @@ namespace dci::module::ppn::transport::net
         {
             if(_started)
             {
-                return cmt::readyFuture<void>(exception::buildInstance<api::AlreadyBound>("unable to bind after acceptor started"));
+                return cmt::readyFuture<None>(exception::buildInstance<api::AlreadyBound>("unable to bind after acceptor started"));
             }
 
             auto scheme = utils::net::url::scheme(address.value);
@@ -58,11 +58,11 @@ namespace dci::module::ppn::transport::net
                "tcp6"sv  != scheme &&
                "tcp"sv   != scheme)
             {
-                return cmt::readyFuture<void>(exception::buildInstance<api::BadAddress>(address.value));
+                return cmt::readyFuture<None>(exception::buildInstance<api::BadAddress>(address.value));
             }
 
             _bindAddress = std::move(address);
-            return cmt::readyFuture<void>();
+            return cmt::readyFuture(None{});
         };
 
         //in start();

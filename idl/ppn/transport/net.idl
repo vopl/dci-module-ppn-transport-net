@@ -11,12 +11,12 @@ scope ppn::transport::net
 {
     interface Connector : connector::Downstream
     {
-        in bind(Address) -> void;
+        in bind(Address) -> none;
     }
 
     interface Acceptor  : acceptor::Downstream
     {
-        in bind(Address) -> void;
+        in bind(Address) -> none;
     }
 
     exception BadAddress            : Error{}
