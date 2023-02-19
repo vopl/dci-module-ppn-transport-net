@@ -143,7 +143,7 @@ namespace dci::module::ppn::transport::net
 
         _netHost = _hostManager->createService<idl::net::Host<>>();
 
-        _netStreamClient = _netHost.apply<idl::net::stream::Client<>>(sol(), [](auto in, cmt::Promise<idl::net::stream::Client<>>&& out)
+        _netStreamClient = _netHost.apply(sol(), [](cmt::Future<idl::net::Host<>> in, cmt::Promise<idl::net::stream::Client<>> out)
         {
             in.value()->streamClient().then() += [out=std::move(out)](auto in) mutable
             {
