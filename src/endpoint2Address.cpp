@@ -22,13 +22,13 @@ namespace dci::module::ppn::transport::net
         else if(ep.holds<idl::net::Ip4Endpoint>())
         {
             const idl::net::Ip4Endpoint& ep4 = ep.get<idl::net::Ip4Endpoint>();
-            res.value = "tcp4://" + utils::net::ip::toString(ep4.address.octets, ep4.port);
+            res.value = "tcp4://" + utils::ip::toString(ep4.address.octets, ep4.port);
             return res;
         }
         else if(ep.holds<idl::net::Ip6Endpoint>())
         {
             const idl::net::Ip6Endpoint& ep6 = ep.get<idl::net::Ip6Endpoint>();
-            res.value = "tcp6://" + utils::net::ip::toString(ep6.address.octets, ep6.address.linkId, ep6.port);
+            res.value = "tcp6://" + utils::ip::toString(ep6.address.octets, ep6.address.linkId, ep6.port);
             return res;
         }
         else if(ep.holds<idl::net::LocalEndpoint>())

@@ -7,57 +7,47 @@
 
 #include "pch.hpp"
 #include "address2Endpoint.hpp"
-#include <dci/utils/net/url.hpp>
 
 namespace dci::module::ppn::transport::net
 {
     /////////0/////////1/////////2/////////3/////////4/////////5/////////6/////////7
     idl::net::Endpoint address2Endpoint(idl::net::Host<>& host, const apit::Address& target)
     {
-        idl::net::Endpoint ep {};
-
-        auto scheme = utils::net::url::scheme(target.value);
-        auto authority = utils::net::url::authority(target.value);
-
-        using namespace std::literals;
-        if("tcp"sv == scheme)
-        {
-            idl::net::IpEndpoint epIp = host->resolveIp(authority).value();
-            if(epIp.holds<idl::net::Ip4Endpoint>())
-            {
-                ep = epIp.get<idl::net::Ip4Endpoint>();
-            }
-            else if(epIp.holds<idl::net::Ip6Endpoint>())
-            {
-                ep = epIp.get<idl::net::Ip6Endpoint>();
-            }
-        }
-        else if("tcp4"sv == scheme)
-        {
-            ep = host->resolveIp4(authority).value();
-        }
-        else if("tcp6"sv == scheme)
-        {
-            ep = host->resolveIp6(authority).value();
-        }
-        else if("local"sv == scheme)
-        {
-            if(!authority.empty())
-            {
-                std::string local(authority);
-                local.insert(0, 1, '\0');
-                ep = idl::net::LocalEndpoint{std::move(local)};
-            }
-            else
-            {
-                ep = idl::net::LocalEndpoint{};
-            }
-        }
-        else
-        {
+        utils::URI<> uri;
+        if(!utils::uri::parse(target.value, uri))
             throw api::BadAddress(target.value);
-        }
 
-        return ep;
+        return std::visit([&]<class Alt>(const Alt& alt)
+                          {
+                              idl::net::Endpoint ep {};
+
+                              if constexpr(std::is_same_v<utils::uri::TCP<>, Alt>)
+                              {
+                                  idl::net::IpEndpoint epIp = host->resolveIp(utils::uri::hostPort(alt)).value();
+                                  if(epIp.holds<idl::net::Ip4Endpoint>())
+                                      ep = epIp.get<idl::net::Ip4Endpoint>();
+                                  else if(epIp.holds<idl::net::Ip6Endpoint>())
+                                      ep = epIp.get<idl::net::Ip6Endpoint>();
+                              }
+                              else if constexpr(std::is_same_v<utils::uri::TCP4<>, Alt>)
+                                  ep = host->resolveIp4(utils::uri::hostPort(alt)).value();
+                              else if constexpr(std::is_same_v<utils::uri::TCP6<>, Alt>)
+                                  ep = host->resolveIp6(utils::uri::hostPort(alt)).value();
+                              else if constexpr(std::is_same_v<utils::uri::Local<>, Alt>)
+                              {
+                                  std::string authority = utils::uri::hostPort(alt);
+                                  if(!authority.empty())
+                                  {
+                                      authority.insert(0, 1, '\0');
+                                      ep = idl::net::LocalEndpoint{std::move(authority)};
+                                  }
+                                  else
+                                      ep = idl::net::LocalEndpoint{};
+                              }
+                              else
+                                  throw api::BadAddress(target.value);
+
+                              return ep;
+                          }, uri);
     }
 }

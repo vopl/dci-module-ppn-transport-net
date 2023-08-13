@@ -9,8 +9,8 @@
 
 #include <dci/host.hpp>
 #include <dci/utils/atScopeExit.hpp>
-#include <dci/utils/net/url.hpp>
-#include <dci/utils/net/ip.hpp>
+#include <dci/utils/uri.hpp>
+#include <dci/utils/ip.hpp>
 #include <dci/poll/waitableTimer.hpp>
 #include "ppn/transport/net.hpp"
 

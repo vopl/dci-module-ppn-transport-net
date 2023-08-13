@@ -44,7 +44,7 @@ namespace dci::module::ppn::transport::net
         //in bind(Address) -> void;
         methods()->bind() += sol() * [this](apit::Address&& address)
         {
-            auto scheme = utils::net::url::scheme(address.value);
+            auto scheme = utils::uri::scheme(address.value);
             using namespace std::literals;
             if("local"sv != scheme &&
                "tcp4"sv  != scheme &&

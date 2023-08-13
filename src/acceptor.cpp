@@ -10,7 +10,6 @@
 #include "channel.hpp"
 #include "address2Endpoint.hpp"
 #include "endpoint2Address.hpp"
-#include <dci/utils/net/url.hpp>
 
 namespace dci::module::ppn::transport::net
 {
@@ -51,7 +50,7 @@ namespace dci::module::ppn::transport::net
                 return cmt::readyFuture<None>(exception::buildInstance<api::AlreadyBound>("unable to bind after acceptor started"));
             }
 
-            auto scheme = utils::net::url::scheme(address.value);
+            auto scheme = utils::uri::scheme(address.value);
             using namespace std::literals;
             if("local"sv != scheme &&
                "tcp4"sv  != scheme &&
